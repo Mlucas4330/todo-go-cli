@@ -2,23 +2,38 @@ package db
 
 import (
 	"database/sql"
-	"log"
+	"fmt"
 
 	_ "github.com/lib/pq"
 )
 
-func Connect() *sql.DB {
-	connStr := "user=postgres dbname=tasks sslmode=disable"
+type DB struct {
+	Conn *sql.DB
+}
 
-	db, err := sql.Open("postgres", connStr)
+func New(connStr string) (*DB, error) {
+	conn, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatal("Failed to open DB:", err)
+		return nil, fmt.Errorf("failed to open database connection: %w", err)
 	}
 
-	err = db.Ping()
-	if err != nil {
-		log.Fatal("Failed to connect to DB:", err)
+	if err = conn.Ping(); err != nil {
+		conn.Close()
+		return nil, fmt.Errorf("failed to connect to conn: %w", err)
 	}
 
-	return db
+	createTableSQL := `
+	CREATE TABLE IF NOT EXISTS tasks (
+		id SERIAL PRIMARY KEY,
+		description TEXT NOT NULL,
+		created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
+		completed_at TIMESTAMP WITH TIME ZONE
+	);`
+
+	if _, err := conn.Exec(createTableSQL); err != nil {
+		conn.Close()
+		return nil, fmt.Errorf("failed to create tasks table: %w", err)
+	}
+
+	return &DB{Conn: conn}, nil
 }
