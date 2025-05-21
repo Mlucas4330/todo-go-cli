@@ -18,15 +18,15 @@ var updateCmd = &cobra.Command{
 		var values []any
 
 		if cmd.Flags().Changed("title") {
-			setClauses = append(setClauses, "title = ?")
+			setClauses = append(setClauses, "title")
 			values = append(values, title)
 		}
 		if cmd.Flags().Changed("category") {
-			setClauses = append(setClauses, "category = ?")
+			setClauses = append(setClauses, "category")
 			values = append(values, categoryStr)
 		}
 		if cmd.Flags().Changed("description") {
-			setClauses = append(setClauses, "description = ?")
+			setClauses = append(setClauses, "description")
 			values = append(values, description)
 		}
 		if cmd.Flags().Changed("amount") {
@@ -35,7 +35,7 @@ var updateCmd = &cobra.Command{
 				log.Fatalf("Error converting amount '%s' to integer: %v", amountStr, err)
 				return
 			}
-			setClauses = append(setClauses, "amount = ?")
+			setClauses = append(setClauses, "amount")
 			values = append(values, amountInt)
 		}
 		if cmd.Flags().Changed("start-date") {
@@ -43,7 +43,7 @@ var updateCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalf("Error parsing end date: %v", err)
 			}
-			setClauses = append(setClauses, "start_date = ?")
+			setClauses = append(setClauses, "start_date")
 			values = append(values, startDateParsed)
 		}
 		if cmd.Flags().Changed("end-date") {
@@ -51,7 +51,7 @@ var updateCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalf("Error parsing notification date: %v", err)
 			}
-			setClauses = append(setClauses, "end_date = ?")
+			setClauses = append(setClauses, "end_date")
 			values = append(values, endDateParsed)
 		}
 		if cmd.Flags().Changed("notification-date") {
@@ -59,7 +59,7 @@ var updateCmd = &cobra.Command{
 			if err != nil {
 				log.Fatalf("Error parsing notification date: %v", err)
 			}
-			setClauses = append(setClauses, "notification_date = ?")
+			setClauses = append(setClauses, "notification_date")
 			values = append(values, notificationDateParsed)
 		}
 
@@ -68,7 +68,7 @@ var updateCmd = &cobra.Command{
 			return
 		}
 
-		setClauses = append(setClauses, "updated_at = ?")
+		setClauses = append(setClauses, "updated_at")
 		values = append(values, time.Now())
 
 		err := taskRepo.Update(id, setClauses, values)

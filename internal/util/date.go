@@ -9,7 +9,7 @@ func ParseDate(dateStr string) (time.Time, error) {
 	if dateStr == "" {
 		return time.Time{}, nil
 	}
-	t, err := time.Parse("2006-01-02", dateStr)
+	t, err := time.Parse("2006-01-02 15:04:05", dateStr)
 	if err != nil {
 		return time.Time{}, fmt.Errorf("could not parse date '%s': %w", dateStr, err)
 	}

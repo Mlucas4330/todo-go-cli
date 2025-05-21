@@ -24,7 +24,7 @@ func (r *TaskRepository) FindAll() ([]model.Task, error) {
 	`)
 
 	if err != nil {
-		return nil, fmt.Errorf("failed to query tasks: %w", err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -44,13 +44,13 @@ func (r *TaskRepository) FindAll() ([]model.Task, error) {
 			&task.NotificationDate,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to scan task row: %w", err)
+			return nil, err
 		}
 		tasks = append(tasks, task)
 	}
 
 	if err = rows.Err(); err != nil {
-		return nil, fmt.Errorf("error during rows iteration: %w", err)
+		return nil, err
 	}
 
 	return tasks, nil
@@ -78,9 +78,9 @@ func (r *TaskRepository) FindById(id string) (model.Task, error) {
 
 	if err != nil {
 		if err == sql.ErrNoRows {
-			return model.Task{}, fmt.Errorf("task with ID %s not found: %w", id, err)
+			return model.Task{}, err
 		}
-		return model.Task{}, fmt.Errorf("failed to scan task for ID %s: %w", id, err)
+		return model.Task{}, err
 	}
 
 	return task, nil
@@ -88,10 +88,9 @@ func (r *TaskRepository) FindById(id string) (model.Task, error) {
 
 func (r *TaskRepository) Create(task *model.Task) error {
 	_, err := r.db.Exec(`
-		INSERT INTO tasks (id, title, category, description, amount, start_date, end_date, notification_date)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO tasks (title, category, description, amount, start_date, end_date, notification_date)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 	`,
-		task.ID,
 		task.Title,
 		task.Category,
 		task.Description,
@@ -105,8 +104,15 @@ func (r *TaskRepository) Create(task *model.Task) error {
 }
 
 func (r *TaskRepository) Update(id string, setClauses []string, values []any) error {
-	idPlaceholderNum := len(values) + 1
-	query := fmt.Sprintf("UPDATE tasks SET %s WHERE id = $%d", strings.Join(setClauses, ", "), idPlaceholderNum)
+	var assignments []string
+	for i, col := range setClauses {
+		assignments = append(assignments, fmt.Sprintf("%s = $%d", col, i+1))
+	}
+
+	idAssigment := len(values) + 1
+
+	query := fmt.Sprintf("UPDATE tasks SET %s WHERE id = $%d", strings.Join(assignments, ", "), idAssigment)
+
 	values = append(values, id)
 
 	_, err := r.db.Exec(query, values...)
@@ -115,7 +121,20 @@ func (r *TaskRepository) Update(id string, setClauses []string, values []any) er
 }
 
 func (r *TaskRepository) Delete(id string) error {
-	_, err := r.db.Exec("DELETE FROM tasks WHERE ID = $1", id)
+	result, err := r.db.Exec("DELETE FROM tasks WHERE ID = $1", id)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("no task found with ID %s", id)
+	}
+
+	return nil
 }

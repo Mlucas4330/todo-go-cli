@@ -80,8 +80,10 @@ func init() {
 	createCmd.Flags().StringVar(&categoryStr, "category", "", "Category (Work, Personal, Shopping, Others)")
 	createCmd.Flags().StringVar(&description, "description", "", "Description of the task")
 	createCmd.Flags().StringVar(&amountStr, "amount", "", "Amount associated with the task")
-	createCmd.Flags().StringVar(&startDateStr, "start-date", "", "Start date (YYYY-MM-DD)")
-	createCmd.Flags().StringVar(&endDateStr, "end-date", "", "End date (YYYY-MM-DD)")
-	createCmd.Flags().StringVar(&notificationDateStr, "notification-date", "", "End date (YYYY-MM-DD)")
+	createCmd.Flags().StringVar(&startDateStr, "start-date", "", "Start date (YYYY-MM-DD HH:MM:SS)")
+	createCmd.Flags().StringVar(&endDateStr, "end-date", "", "End date (YYYY-MM-DD HH:MM:SS)")
+	createCmd.Flags().StringVar(&notificationDateStr, "notification-date", "", "End date (YYYY-MM-DD HH:MM:SS)")
 	createCmd.MarkFlagRequired("title")
+	createCmd.MarkFlagRequired("description")
+	createCmd.MarkFlagRequired("category")
 }

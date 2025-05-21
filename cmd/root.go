@@ -28,7 +28,7 @@ func Init(repo *repository.TaskRepository) {
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(deleteCmd)
 	rootCmd.AddCommand(updateCmd)
-	rootCmd.AddCommand(viewCmd)
+	rootCmd.AddCommand(readCmd)
 }
 
 var rootCmd = &cobra.Command{

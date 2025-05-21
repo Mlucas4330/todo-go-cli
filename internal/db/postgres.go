@@ -23,12 +23,19 @@ func New(connStr string) (*DB, error) {
 	}
 
 	createTableSQL := `
-	CREATE TABLE IF NOT EXISTS tasks (
-		id SERIAL PRIMARY KEY,
-		description TEXT NOT NULL,
-		created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT NOW(),
-		completed_at TIMESTAMP WITH TIME ZONE
-	);`
+		CREATE TABLE IF NOT EXISTS tasks (
+				id SERIAL PRIMARY KEY,
+				title TEXT NOT NULL,
+				category TEXT,
+				description TEXT,
+				amount INTEGER,
+				start_date TIMESTAMPTZ,
+				end_date TIMESTAMPTZ,
+				notification_date TIMESTAMPTZ,
+				created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+				updated_at TIMESTAMPTZ
+		);
+	`
 
 	if _, err := conn.Exec(createTableSQL); err != nil {
 		conn.Close()
