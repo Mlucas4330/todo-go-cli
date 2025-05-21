@@ -7,6 +7,7 @@ import (
 	"text/tabwriter"
 
 	"github.com/mergestat/timediff"
+	"github.com/mlucas4330/todo-go-cli/internal/util"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +40,7 @@ var readCmd = &cobra.Command{
 			fmt.Fprintf(w, "Category:\t%s\n", task.Category)
 			fmt.Fprintf(w, "Description:\t%s\n", task.Description)
 			if task.Amount.Valid {
-				fmt.Fprintf(w, "Amount:\t%d\n", task.Amount.Int64)
+				fmt.Fprintf(w, "Amount:\t%s\n", util.FormatCurrency(task.Amount.Int64))
 			}
 			if task.StartDate.Valid {
 				fmt.Fprintf(w, "Start Date:\t%v\n", timediff.TimeDiff(task.StartDate.Time, timediff.WithLocale("pt-BR")))
@@ -76,7 +77,7 @@ var readCmd = &cobra.Command{
 				fmt.Fprintf(w, "Category:\t%s\n", task.Category)
 				fmt.Fprintf(w, "Description:\t%s\n", task.Description)
 				if task.Amount.Valid {
-					fmt.Fprintf(w, "Amount:\t%d\n", task.Amount.Int64)
+					fmt.Fprintf(w, "Amount:\t%s\n", util.FormatCurrency(task.Amount.Int64))
 				}
 				if task.StartDate.Valid {
 					fmt.Fprintf(w, "Start Date:\t%v\n", timediff.TimeDiff(task.StartDate.Time, timediff.WithLocale("pt-BR")))
